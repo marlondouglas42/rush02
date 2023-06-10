@@ -2,8 +2,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdlib.h>
-#include <unistd.h>
 #include <fcntl.h>
 #include "funcoes_uteis.c"
 
@@ -15,7 +13,7 @@ typedef struct {
 void carregueDicionarioNaMemoria(RegistroDicionario *dicionario, int *numero_de_registros, char *arquivo_de_dicionario) {
 	FILE *arquivo = fopen(arquivo_de_dicionario, "r");
 	if (arquivo == NULL) {
-		printf("Falha ao abrir arquivo.\n");
+		ft_putstr("Falha ao abrir arquivo.\n");
 		return ;
 	}
 
@@ -25,7 +23,7 @@ void carregueDicionarioNaMemoria(RegistroDicionario *dicionario, int *numero_de_
 
 	while (fgets(linha, sizeof(linha), arquivo) != NULL) {
 		if (*numero_de_registros >= registros_maximo) {
-			printf("O dicionário tem muitos registros.\n");
+			ft_putstr("O dicionário tem muitos registros.\n");
 			return ;
 		}
 
@@ -33,11 +31,11 @@ void carregueDicionarioNaMemoria(RegistroDicionario *dicionario, int *numero_de_
 		char *numero_em_palavras = strtok(NULL, ":");
 
 		if (numero_em_char == NULL || numero_em_palavras == NULL) {
-			printf("Registro inválido.\n");
+			ft_putstr("Registro inválido.\n");
 			return;
 		}
 
-		dicionario[*numero_de_registros].numero = atoll(numero_em_char);
+		dicionario[*numero_de_registros].numero = ft_atoi(numero_em_char);
 		strcpy(dicionario[*numero_de_registros].numero_em_palavras, numero_em_palavras);
 
 		(*numero_de_registros)++;
@@ -58,21 +56,60 @@ char* receber_numero_em_palavras(RegistroDicionario *dicionario, int numero_de_r
 
 void printNumeroEmPalavras(RegistroDicionario *dicionario, int numero_de_registros, long numero) {
 	if (numero < 0) {
-		printf("minus ");
+		ft_putstr("minus ");
 		numero = -numero;
 	}
 
-	while (numero / 10 > 0)
-	{
+	char numero_em_palavras[200] = "";
 
+	if (numero == 0) {
+		ft_putstr("zero");
+		return;
 	}
+
+	if (numero >= 1000000000) {
+		strcat(numero_em_palavras, receber_numero_em_palavras(dicionario, numero_de_registros, numero / 1000000000));
+		strcat(numero_em_palavras, " billion ");
+		numero %= 1000000000;
+	}
+
+	if (numero >= 1000000) {
+		strcat(numero_em_palavras, receber_numero_em_palavras(dicionario, numero_de_registros, numero / 1000000));
+		strcat(numero_em_palavras, " million ");
+		numero %= 1000000;
+	}
+
+	if (numero >= 1000) {
+		strcat(numero_em_palavras, receber_numero_em_palavras(dicionario, numero_de_registros, numero / 1000));
+		strcat(numero_em_palavras, " thousand ");
+		numero %= 1000;
+	}
+
+	if (numero >= 100) {
+		strcat(numero_em_palavras, receber_numero_em_palavras(dicionario, numero_de_registros, numero / 100));
+		strcat(numero_em_palavras, " hundred ");
+		numero %= 100;
+	}
+
+	if (numero >= 20) {
+		int dezena = numero / 10;
+		int unidade = numero % 10;
+		strcat(numero_em_palavras, receber_numero_em_palavras(dicionario, numero_de_registros, dezena * 10));
+		if (unidade > 0) {
+			strcat(numero_em_palavras, "-");
+			strcat(numero_em_palavras, receber_numero_em_palavras(dicionario, numero_de_registros, unidade));
+		}
+	} else {
+		strcat(numero_em_palavras, receber_numero_em_palavras(dicionario, numero_de_registros, numero));
+	}
+
+	ft_putstr(numero_em_palavras);
 }
 
 
 int main(int quantidade_de_argumentos, char *lista_de_argumentos[]) {
 	if (quantidade_de_argumentos < 2 || quantidade_de_argumentos > 3) {
-		//testes();
-		printf("Número inválido de argumentos.\n");
+		ft_putstr("Número inválido de argumentos.\n");
 		return 1;
 	}
 
@@ -94,13 +131,6 @@ int main(int quantidade_de_argumentos, char *lista_de_argumentos[]) {
 	}
 
 	printNumeroEmPalavras(dicionario, numero_de_registros, numero);
-
-	// int i = 100;
-	// while (i < 200)
-	// {
-	// 	printNumeroEmPalavras(dicionario, numero_de_registros, i);
-	// 	i++;
-	// }
 
 	return 0;
 }

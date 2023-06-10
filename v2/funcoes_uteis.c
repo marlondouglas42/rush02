@@ -1,4 +1,4 @@
-void	ft_putstr(char *str)
+void	ft_putstr2(char *str)
 {
 	int i;
 
@@ -8,6 +8,15 @@ void	ft_putstr(char *str)
 		write(1, &str[i], 1);
 		i++;
 	}
+}
+void ft_putstr(char *str) {
+    int i = 0;
+    while (str[i] != '\0') {
+        if (str[i] != ' ' && str[i] != '\n') {
+            putchar(str[i]);
+        }
+        i++;
+    }
 }
 
 int	ft_atoi(const char *str)
